@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "type": "doc",
+  "content": [
+    {
+      "type": "table",
+      "attrs": { "isNumberColumnEnabled": false, "layout": "default" },
+      "content": [
+        {
+          "type": "tableRow",
+          "content": [
+            { "type": "tableHeader", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "이름", "marks": [{ "type": "strong" }] }] }] },
+            { "type": "tableHeader", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "(월) {{MON_MMDD}}", "marks": [{ "type": "strong" }] }] }] },
+            { "type": "tableHeader", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "(화) {{TUE_MMDD}}", "marks": [{ "type": "strong" }] }] }] },
+            { "type": "tableHeader", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "(수) {{WED_MMDD}}", "marks": [{ "type": "strong" }] }] }] },
+            { "type": "tableHeader", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "(목) {{THU_MMDD}}", "marks": [{ "type": "strong" }] }] }] },
+            { "type": "tableHeader", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "(금) {{FRI_MMDD}}", "marks": [{ "type": "strong" }] }] }] }
+          ]
+        },
+        {
+          "type": "tableRow",
+          "content": [
+            { "type": "tableCell", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "공유사항" }] }] },
+            { "type": "tableCell", "content": [{ "type": "paragraph" }] },
+            { "type": "tableCell", "content": [{ "type": "paragraph" }] },
+            { "type": "tableCell", "content": [{ "type": "paragraph" }] },
+            { "type": "tableCell", "content": [{ "type": "paragraph" }] },
+            { "type": "tableCell", "content": [{ "type": "paragraph" }] }
+          ]
+        },
+        {
+          "type": "tableRow",
+          "content": [
+            { "type": "tableCell", "content": [{ "type": "paragraph", "content": [{ "type": "mention", "attrs": { "id": "712020:a8332c5e-131a-4556-b594-201f61eb7940", "text": "@Sangmin Lee" } }] }] },
+            { "type": "tableCell", "content": [{ "type": "paragraph" }] },
+            { "type": "tableCell", "content": [{ "type": "paragraph" }] },
+            { "type": "tableCell", "content": [{ "type": "paragraph" }] },
+            { "type": "tableCell", "content": [{ "type": "paragraph" }] },
+            { "type": "tableCell", "content": [{ "type": "paragraph" }] }
+          ]
+        },
+        {
+          "type": "tableRow",
+          "content": [
+            { "type": "tableCell", "content": [{ "type": "paragraph", "content": [{ "type": "mention", "attrs": { "id": "616002f672f6970069830b3c", "text": "@Jina Shin" } }] }] },
+            { "type": "tableCell", "content": [{ "type": "paragraph" }] },
+            { "type": "tableCell", "content": [{ "type": "paragraph" }] },
+            { "type": "tableCell", "content": [{ "type": "paragraph" }] },
+            { "type": "tableCell", "content": [{ "type": "paragraph" }] },
+            { "type": "tableCell", "content": [{ "type": "paragraph" }] }
+          ]
+        },
+        {
+          "type": "tableRow",
+          "content": [
+            { "type": "tableCell", "content": [{ "type": "paragraph", "content": [{ "type": "mention", "attrs": { "id": "630c74dd6a8bb4eda6768a18", "text": "@Dae Chan Im" } }] }] },
+            { "type": "tableCell", "content": [{ "type": "paragraph" }] },
+            { "type": "tableCell", "content": [{ "type": "paragraph" }] },
+            { "type": "tableCell", "content": [{ "type": "paragraph" }] },
+            { "type": "tableCell", "content": [{ "type": "paragraph" }] },
+            { "type": "tableCell", "content": [{ "type": "paragraph" }] }
+          ]
+        },
+        {
+          "type": "tableRow",
+          "content": [
+            { "type": "tableCell", "content": [{ "type": "paragraph", "content": [{ "type": "mention", "attrs": { "id": "712020:bc66b440-d85d-4fdc-85c8-a925baf90869", "text": "@Wonjun Lee" } }] }] },
+            { "type": "tableCell", "content": [{ "type": "paragraph" }] },
+            { "type": "tableCell", "content": [{ "type": "paragraph" }] },
+            { "type": "tableCell", "content": [{ "type": "paragraph" }] },
+            { "type": "tableCell", "content": [{ "type": "paragraph" }] },
+            { "type": "tableCell", "content": [{ "type": "paragraph" }] }
+          ]
+        },
+        {
+          "type": "tableRow",
+          "content": [
+            { "type": "tableCell", "content": [{ "type": "paragraph", "content": [{ "type": "mention", "attrs": { "id": "712020:1a5478ea-c553-4bb1-a84c-8ba08ea0424a", "text": "@Jaehoon Lee" } }] }] },
+            { "type": "tableCell", "content": [{ "type": "paragraph" }] },
+            { "type": "tableCell", "content": [{ "type": "paragraph" }] },
+            { "type": "tableCell", "content": [{ "type": "paragraph" }] },
+            { "type": "tableCell", "content": [{ "type": "paragraph" }] },
+            { "type": "tableCell", "content": [{ "type": "paragraph" }] }
+          ]
+        }
+      ]
+    }
+  ]
+}
