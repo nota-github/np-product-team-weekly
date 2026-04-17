@@ -96,6 +96,18 @@ def build_adf_body(monday: date, mentions: list[dict]) -> str:
 
 
 def create_page(config: dict, title: str, body_adf: str) -> dict:
+    # --dry-run: print payload as JSON for MCP-based creation and exit
+    if "--dry-run" in sys.argv:
+        payload = {
+            "title": title,
+            "body": body_adf,
+            "spaceId": config["spaceId"],
+            "parentId": config["parentId"],
+            "confluenceBase": config["confluenceBase"],
+        }
+        print(json.dumps(payload, ensure_ascii=False))
+        sys.exit(0)
+
     email = os.environ["ATLASSIAN_EMAIL"]
     token = os.environ["ATLASSIAN_API_TOKEN"]
     payload = {
