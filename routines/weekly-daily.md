@@ -1,7 +1,7 @@
 # Weekly Daily Report Routine
 
 ## Schedule
-Weekly · Monday 09:00 (KST)
+Weekly · Monday 06:00 (KST)
 
 ## Required environment variables
 - `ATLASSIAN_EMAIL` — Atlassian account email (ex: `name@nota.ai`)
