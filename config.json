@@ -2,6 +2,14 @@
   "confluenceBase": "https://nota-dev.atlassian.net/wiki",
   "spaceId": "951091308",
   "parentId": "1918533635",
+  "jira": {
+    "baseUrl": "https://nota-dev.atlassian.net",
+    "boards": [
+      "https://nota-dev.atlassian.net/jira/software/c/projects/NPP58/boards/2483",
+      "https://nota-dev.atlassian.net/jira/software/c/projects/NPP59/boards/2615",
+      "https://nota-dev.atlassian.net/jira/software/c/projects/NPP02/boards/2582"
+    ]
+  },
   "mentions": [
     { "accountId": "712020:a8332c5e-131a-4556-b594-201f61eb7940", "displayName": "Sangmin Lee" },
     { "accountId": "616002f672f6970069830b3c", "displayName": "Jina Shin" },
