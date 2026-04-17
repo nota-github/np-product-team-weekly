@@ -7,19 +7,20 @@ In Review, Blocked, or Done-resolved-today.
 
 Writes each ticket as one paragraph (title link + status label + due label) into
 the today-column cell of each person's row. Weekend runs are a no-op.
+
+Input  (stdin):  JSON { jira_issues, confluence_page_id, confluence_page_title,
+                        confluence_page_body_adf }
+Output (stdout): JSON { page_id, title, body_adf, updated_rows }
 """
 
 from __future__ import annotations
 
 import json
-import os
 import re
 import sys
 import uuid
 from datetime import date, timedelta
 from pathlib import Path
-
-import requests
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 CONFIG_PATH = REPO_ROOT / "config.json"
@@ -37,10 +38,6 @@ BOARD_PROJECT_RE = re.compile(r"/projects/([A-Z0-9]+)/")
 
 def load_config() -> dict:
     return json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
-
-
-def auth() -> tuple[str, str]:
-    return (os.environ["ATLASSIAN_EMAIL"], os.environ["ATLASSIAN_API_TOKEN"])
 
 
 def project_keys(config: dict) -> list[str]:
@@ -65,29 +62,6 @@ def build_jql(config: dict) -> str:
     )
 
 
-def search_tickets(config: dict) -> list[dict]:
-    url = f"{config['jira']['baseUrl']}/rest/api/3/search/jql"
-    payload = {
-        "jql": build_jql(config),
-        "fields": ["summary", "status", "assignee", "duedate", "resolutiondate"],
-        "maxResults": 100,
-    }
-    r = requests.post(url, auth=auth(), json=payload, timeout=30)
-    r.raise_for_status()
-    tickets = []
-    for issue in r.json().get("issues", []):
-        f = issue["fields"]
-        assignee = f.get("assignee") or {}
-        tickets.append({
-            "key": issue["key"],
-            "summary": f["summary"],
-            "status": f["status"]["name"],
-            "assigneeId": assignee.get("accountId"),
-            "duedate": f.get("duedate"),
-        })
-    return tickets
-
-
 def week_monday(today: date) -> date:
     return today - timedelta(days=today.weekday())
 
@@ -95,27 +69,6 @@ def week_monday(today: date) -> date:
 def page_title(monday: date) -> str:
     friday = monday + timedelta(days=4)
     return f"{monday:%y%m%d}-{friday:%y%m%d} Daily"
-
-
-def find_page_id(config: dict, title: str) -> str:
-    url = f"{config['confluenceBase']}/api/v2/pages"
-    params = {"space-id": config["spaceId"], "title": title, "limit": 25}
-    r = requests.get(url, auth=auth(), params=params, timeout=30)
-    r.raise_for_status()
-    results = r.json().get("results", [])
-    match = next((p for p in results if p.get("parentId") == config["parentId"]), None)
-    if match is None and results:
-        match = results[0]
-    if match is None:
-        raise RuntimeError(f"Page not found under space {config['spaceId']}: {title}")
-    return match["id"]
-
-
-def get_page(config: dict, page_id: str) -> dict:
-    url = f"{config['confluenceBase']}/api/v2/pages/{page_id}"
-    r = requests.get(url, auth=auth(), params={"body-format": "atlas_doc_format"}, timeout=30)
-    r.raise_for_status()
-    return r.json()
 
 
 def status_node(text: str, color: str) -> dict:
@@ -173,30 +126,7 @@ def assignee_of_row(cell: dict, mention_ids: set[str]) -> str | None:
     return aid if aid in mention_ids else None
 
 
-def update_page(config: dict, page: dict, body_doc: dict) -> dict:
-    page_id = page["id"]
-    url = f"{config['confluenceBase']}/api/v2/pages/{page_id}"
-    payload = {
-        "id": page_id,
-        "status": "current",
-        "title": page["title"],
-        "body": {
-            "representation": "atlas_doc_format",
-            "value": json.dumps(body_doc, ensure_ascii=False),
-        },
-        "version": {
-            "number": page["version"]["number"] + 1,
-            "message": "Auto: fill today's column with Jira tickets",
-        },
-    }
-    r = requests.put(url, auth=auth(), json=payload, timeout=30)
-    if not r.ok:
-        sys.stderr.write(f"Update failed {r.status_code}: {r.text}\n")
-        r.raise_for_status()
-    return r.json()
-
-
-def _tickets_from_mcp_issues(issues: list) -> list[dict]:
+def parse_tickets(issues: list) -> list[dict]:
     tickets = []
     for issue in issues:
         f = issue.get("fields", {})
@@ -212,14 +142,6 @@ def _tickets_from_mcp_issues(issues: list) -> list[dict]:
 
 
 def main() -> int:
-    import argparse
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "--mcp-mode", action="store_true",
-        help="Read Jira/Confluence data from stdin JSON; write update payload to stdout JSON",
-    )
-    args = parser.parse_args()
-
     config = load_config()
     today = date.today()
     if today.weekday() >= 5:
@@ -231,22 +153,13 @@ def main() -> int:
     today_col = today.weekday() + 1
     jira_browse = f"{config['jira']['baseUrl']}/browse"
 
-    if args.mcp_mode:
-        data = json.load(sys.stdin)
-        tickets = _tickets_from_mcp_issues(data["jira_issues"])
-        page_id = str(data["confluence_page_id"])
-        page_title_val = data["confluence_page_title"]
-        page_version = int(data["confluence_page_version"])
-        body = data["confluence_page_body_adf"]
-        if isinstance(body, str):
-            body = json.loads(body)
-    else:
-        tickets = search_tickets(config)
-        raw_page = get_page(config, find_page_id(config, title))
-        page_id = raw_page["id"]
-        page_title_val = raw_page["title"]
-        page_version = raw_page["version"]["number"]
-        body = json.loads(raw_page["body"]["atlas_doc_format"]["value"])
+    data = json.load(sys.stdin)
+    tickets = parse_tickets(data["jira_issues"])
+    page_id = str(data["confluence_page_id"])
+    page_title_val = data["confluence_page_title"]
+    body = data["confluence_page_body_adf"]
+    if isinstance(body, str):
+        body = json.loads(body)
 
     by_assignee: dict[str, list[dict]] = {}
     for t in tickets:
@@ -267,21 +180,13 @@ def main() -> int:
         cells[today_col] = build_cell(by_assignee.get(aid, []), today, jira_browse)
         updated += 1
 
-    if args.mcp_mode:
-        payload = {
-            "page_id": page_id,
-            "title": page_title_val,
-            "version": page_version + 1,
-            "body_adf": json.dumps(body, ensure_ascii=False),
-            "updated_rows": updated,
-        }
-        json.dump(payload, sys.stdout, ensure_ascii=False)
-        return 0
-
-    page_stub = {"id": page_id, "title": page_title_val, "version": {"number": page_version}}
-    update_page(config, page_stub, body)
-    print(f"Updated {title}: {updated} row(s) in ({DAY_LABELS[today.weekday()]}) column")
-    print(f"URL: {config['confluenceBase']}/spaces/{config['spaceId']}/pages/{page_id}")
+    payload = {
+        "page_id": page_id,
+        "title": page_title_val,
+        "body_adf": json.dumps(body, ensure_ascii=False),
+        "updated_rows": updated,
+    }
+    json.dump(payload, sys.stdout, ensure_ascii=False)
     return 0
 
 
