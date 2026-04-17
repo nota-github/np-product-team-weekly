@@ -20,14 +20,14 @@ Steps:
    report the stderr verbatim and stop — do NOT attempt to fix the page
    manually or call any MCP tool as a fallback.
 
-Do not modify the script, template, mention IDs, space ID, parent ID,
-or any part of the table. The table layout is fixed in the repository.
+Do not modify the script, config, or any part of the table.
+The table layout is fixed in the repository.
 ```
 
 ## Notes
-- Table structure, mention account IDs, `spaceId`, and `parentId` are
-  hardcoded in `templates/daily_page.adf.json` and
-  `scripts/create_daily_page.py`.
-- Only the Monday–Friday dates are computed from `date.today()`.
-- To change the participant list or structure, edit the template and
-  script directly and commit — the routine prompt never changes.
+- `config.json` holds the editable settings: `parentId` (target folder),
+  `spaceId`, `confluenceBase`, and the `mentions` list.
+- Table structure is fixed in `scripts/create_daily_page.py`; only the
+  Monday–Friday dates are computed from `date.today()`.
+- To change the target folder or participants, edit `config.json` only.
+  The script and routine prompt do not need to change.
