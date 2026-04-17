@@ -196,7 +196,30 @@ def update_page(config: dict, page: dict, body_doc: dict) -> dict:
     return r.json()
 
 
+def _tickets_from_mcp_issues(issues: list) -> list[dict]:
+    tickets = []
+    for issue in issues:
+        f = issue.get("fields", {})
+        assignee = f.get("assignee") or {}
+        tickets.append({
+            "key": issue["key"],
+            "summary": f.get("summary", ""),
+            "status": (f.get("status") or {}).get("name", ""),
+            "assigneeId": assignee.get("accountId"),
+            "duedate": f.get("duedate"),
+        })
+    return tickets
+
+
 def main() -> int:
+    import argparse
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--mcp-mode", action="store_true",
+        help="Read Jira/Confluence data from stdin JSON; write update payload to stdout JSON",
+    )
+    args = parser.parse_args()
+
     config = load_config()
     today = date.today()
     if today.weekday() >= 5:
@@ -208,15 +231,27 @@ def main() -> int:
     today_col = today.weekday() + 1
     jira_browse = f"{config['jira']['baseUrl']}/browse"
 
-    tickets = search_tickets(config)
+    if args.mcp_mode:
+        data = json.load(sys.stdin)
+        tickets = _tickets_from_mcp_issues(data["jira_issues"])
+        page_id = str(data["confluence_page_id"])
+        page_title_val = data["confluence_page_title"]
+        page_version = int(data["confluence_page_version"])
+        body = data["confluence_page_body_adf"]
+        if isinstance(body, str):
+            body = json.loads(body)
+    else:
+        tickets = search_tickets(config)
+        raw_page = get_page(config, find_page_id(config, title))
+        page_id = raw_page["id"]
+        page_title_val = raw_page["title"]
+        page_version = raw_page["version"]["number"]
+        body = json.loads(raw_page["body"]["atlas_doc_format"]["value"])
+
     by_assignee: dict[str, list[dict]] = {}
     for t in tickets:
         if t["assigneeId"]:
             by_assignee.setdefault(t["assigneeId"], []).append(t)
-
-    page_id = find_page_id(config, title)
-    page = get_page(config, page_id)
-    body = json.loads(page["body"]["atlas_doc_format"]["value"])
 
     table = next(n for n in body["content"] if n["type"] == "table")
     mention_ids = {m["accountId"] for m in config["mentions"]}
@@ -232,7 +267,19 @@ def main() -> int:
         cells[today_col] = build_cell(by_assignee.get(aid, []), today, jira_browse)
         updated += 1
 
-    update_page(config, page, body)
+    if args.mcp_mode:
+        payload = {
+            "page_id": page_id,
+            "title": page_title_val,
+            "version": page_version + 1,
+            "body_adf": json.dumps(body, ensure_ascii=False),
+            "updated_rows": updated,
+        }
+        json.dump(payload, sys.stdout, ensure_ascii=False)
+        return 0
+
+    page_stub = {"id": page_id, "title": page_title_val, "version": {"number": page_version}}
+    update_page(config, page_stub, body)
     print(f"Updated {title}: {updated} row(s) in ({DAY_LABELS[today.weekday()]}) column")
     print(f"URL: {config['confluenceBase']}/spaces/{config['spaceId']}/pages/{page_id}")
     return 0
