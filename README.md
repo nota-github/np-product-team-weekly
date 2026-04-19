@@ -7,7 +7,7 @@ NP Team Product 주간 Daily 페이지 자동화.
 - `scripts/create_daily_page.py` — 매주 월요일, 이번 주 월~금 날짜로 표 페이지 생성.
 - `scripts/fill_today_column.py` — 매 평일 말, 오늘 컬럼에 각자 할당된 Jira 티켓 채우기.
 - `routines/weekly-daily.md` — 주간 페이지 생성 Routine (월 06:00).
-- `routines/daily-fill.md` — 매일 티켓 채우기 Routine (월–금 23:45).
+- `routines/daily-fill.md` — 매일 티켓 채우기 Routine (월–금 23:30).
 
 ## 설정 변경
 - **다른 Confluence 폴더로 이동**: `config.json`의 `parentId`(필요시 `spaceId`) 수정.
