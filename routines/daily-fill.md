@@ -1,7 +1,7 @@
 # Daily Fill Routine
 
 ## Schedule
-Weekdays (Mon–Fri) · 23:45 (KST)
+Weekdays (Mon–Fri) · 23:30 (KST)
 
 Cron (UTC, KST–9h): `45 14 * * 1-5`
 
