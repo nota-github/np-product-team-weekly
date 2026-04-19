@@ -15,7 +15,3 @@ NP Team Product 주간 Daily 페이지 자동화.
 - **참여자 변경**: `config.json`의 `mentions` 배열 편집.
 
 표 구조(헤더·공유사항 행·5일 컬럼)는 의도적으로 스크립트에 고정되어 있습니다.
-
-## 환경 변수 (Routine 설정에서 주입)
-- `ATLASSIAN_EMAIL`
-- `ATLASSIAN_API_TOKEN` — https://id.atlassian.com/manage-profile/security/api-tokens
