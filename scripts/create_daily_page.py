@@ -14,8 +14,6 @@ import sys
 from datetime import date, timedelta
 from pathlib import Path
 
-import requests
-
 REPO_ROOT = Path(__file__).resolve().parent.parent
 CONFIG_PATH = REPO_ROOT / "config.json"
 
@@ -107,6 +105,8 @@ def create_page(config: dict, title: str, body_adf: str) -> dict:
         }
         print(json.dumps(payload, ensure_ascii=False))
         sys.exit(0)
+
+    import requests
 
     email = os.environ["ATLASSIAN_EMAIL"]
     token = os.environ["ATLASSIAN_API_TOKEN"]
