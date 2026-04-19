@@ -1,9 +1,9 @@
 # Daily Fill Routine
 
 ## Schedule
-Weekdays (Mon–Fri) · 23:45 (KST)
+Weekdays (Mon–Fri) · 23:30 (KST)
 
-Cron (UTC, KST–9h): `45 14 * * 1-5`
+Cron (UTC, KST–9h): `30 14 * * 1-5`
 
 ## Required access
 - Atlassian MCP server must be connected.
