@@ -11,7 +11,7 @@ from __future__ import annotations
 import json
 import os
 import sys
-from datetime import date, timedelta
+from datetime import date, timedelta, timezone, datetime
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -132,7 +132,7 @@ def create_page(config: dict, title: str, body_adf: str) -> dict:
 
 def main() -> int:
     config = load_config()
-    monday = week_monday(date.today())
+    monday = week_monday(datetime.now(timezone(timedelta(hours=9))).date())
     title = build_title(monday)
     body = build_adf_body(monday, config["mentions"])
     result = create_page(config, title, body)
