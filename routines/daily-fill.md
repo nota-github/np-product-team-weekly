@@ -38,7 +38,7 @@ Steps:
        project in (<keys>)
        AND assignee in ("<id1>","<id2>",...)
        AND (status in ("In Progress","In Review","Blocked")
-            OR (status = Done AND resolutiondate >= startOfDay()))
+            OR (status = Done AND resolutiondate >= startOfDay("+0900")))
 
 4. Compute this week's page title:
    - Monday  = today − today.weekday()
@@ -92,10 +92,11 @@ Steps:
 
 ## Notes
 - Target page is located by title: `yymmdd-yymmdd Daily` for the week
-  containing `date.today()`, under `config.parentId`.
+  containing today's date in KST (Asia/Seoul, UTC+9), under `config.parentId`.
 - Today's column = today's weekday (월=1 … 금=5). Weekends no-op.
 - Tickets selected: `status in (In Progress, In Review, Blocked)` OR
-  (`status = Done AND resolutiondate >= startOfDay()`).
+  (`status = Done AND resolutiondate >= startOfDay("+0900")`). All date/time
+  boundaries are KST (Asia/Seoul, UTC+9).
 - Edit `config.json → jira.boards` to change which projects are scanned;
   project keys are extracted from board URLs.
 - `scripts/fill_today_column.py` depends only on the Python stdlib;

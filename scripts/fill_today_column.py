@@ -19,8 +19,10 @@ import json
 import re
 import sys
 import uuid
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
+
+KST = timezone(timedelta(hours=9))
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 CONFIG_PATH = REPO_ROOT / "config.json"
@@ -58,7 +60,7 @@ def build_jql(config: dict) -> str:
         f"project in ({projects}) "
         f"AND assignee in ({assignees}) "
         f"AND (status in ({tracked}) "
-        f"OR (status = Done AND resolutiondate >= startOfDay()))"
+        f"OR (status = Done AND resolutiondate >= startOfDay('+0900')))"
     )
 
 
@@ -143,7 +145,7 @@ def parse_tickets(issues: list) -> list[dict]:
 
 def main() -> int:
     config = load_config()
-    today = date.today()
+    today = datetime.now(KST).date()
     if today.weekday() >= 5:
         print(f"Skip: {today} is a weekend")
         return 0
